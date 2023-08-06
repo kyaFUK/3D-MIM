@@ -12,6 +12,8 @@ We try to stationalize and approximate the non-stationary processes by modeling 
 ![model](https://github.com/ZJianjin/mim_images/blob/master/readme_structure.png)
 
 
+## How to run
+singularity build mim-3d.file docker://kyafuk/tensorflow:mim-3d
 
 ## Generation Results
 
