@@ -1,8 +1,8 @@
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from src.layers.TensorLayerNorm import tensor_layer_norm
 import math
 
-
+#changed conv2d to conv3d, and added depth
 class MIMBlock():
     def __init__(self, layer_name, filter_size, num_hidden_in, num_hidden,
                  seq_shape, tln=False, initializer=None):
@@ -22,6 +22,7 @@ class MIMBlock():
         self.batch = seq_shape[0]
         self.height = seq_shape[2]
         self.width = seq_shape[3]
+        self.depth = seq_shape[4]
         self.layer_norm = tln
         self._forget_bias = 1.0
 
@@ -34,7 +35,7 @@ class MIMBlock():
             self.initializer = tf.random_uniform_initializer(-initializer, initializer)
 
     def init_state(self):
-        return tf.zeros([self.batch, self.height, self.width, self.num_hidden],
+        return tf.zeros([self.batch, self.height, self.width, self.depth, self.num_hidden],
                         dtype=tf.float32)
 
     def MIMS(self, x, h_t, c_t):
@@ -43,18 +44,18 @@ class MIMBlock():
         if c_t is None:
             c_t = self.init_state()
         with tf.variable_scope(self.layer_name):
-            h_concat = tf.layers.conv2d(h_t, self.num_hidden * 4,
+            h_concat = tf.layers.conv3d(h_t, self.num_hidden * 4,
                                         self.filter_size, 1, padding='same',
                                         kernel_initializer=self.initializer(self.num_hidden, self.num_hidden * 4),
                                         name='state_to_state')
             if self.layer_norm:
                 h_concat = tensor_layer_norm(h_concat, 'state_to_state')
-            i_h, g_h, f_h, o_h = tf.split(h_concat, 4, 3)
+            i_h, g_h, f_h, o_h = tf.split(h_concat, 4, 4)
 
             ct_weight = tf.get_variable(
-                'c_t_weight', [self.height,self.width,self.num_hidden*2])
-            ct_activation = tf.multiply(tf.tile(c_t, [1,1,1,2]), ct_weight)
-            i_c, f_c = tf.split(ct_activation, 2, 3)
+                'c_t_weight', [self.height,self.width,self.depth,self.num_hidden*2])
+            ct_activation = tf.multiply(tf.tile(c_t, [1,1,1,1,2]), ct_weight)
+            i_c, f_c = tf.split(ct_activation, 2, 4)
 
             i_ = i_h + i_c
             f_ = f_h + f_c
@@ -62,14 +63,14 @@ class MIMBlock():
             o_ = o_h
 
             if x != None:
-                x_concat = tf.layers.conv2d(x, self.num_hidden * 4,
+                x_concat = tf.layers.conv3d(x, self.num_hidden * 4,
                                             self.filter_size, 1,
                                             padding='same',
                                             kernel_initializer=self.initializer(self.num_hidden, self.num_hidden * 4),
                                             name='input_to_state')
                 if self.layer_norm:
                     x_concat = tensor_layer_norm(x_concat, 'input_to_state')
-                i_x, g_x, f_x, o_x = tf.split(x_concat, 4, 3)
+                i_x, g_x, f_x, o_x = tf.split(x_concat, 4, 4)
 
                 i_ += i_x
                 f_ += f_x
@@ -81,7 +82,7 @@ class MIMBlock():
             c_new = f_ * c_t + i_ * tf.nn.tanh(g_)
 
             oc_weight = tf.get_variable(
-                'oc_weight', [self.height,self.width,self.num_hidden])
+                'oc_weight', [self.height,self.width,self.depth,self.num_hidden])
             o_c = tf.multiply(c_new, oc_weight)
 
             h_new = tf.nn.sigmoid(o_ + o_c) * tf.nn.tanh(c_new)
@@ -99,18 +100,18 @@ class MIMBlock():
             diff_h = tf.zeros_like(h)
 
         with tf.variable_scope(self.layer_name):
-            t_cc = tf.layers.conv2d(
+            t_cc = tf.layers.conv3d(
                 h, self.num_hidden * 3,
                 self.filter_size, 1, padding='same',
                 kernel_initializer=self.initializer(self.num_hidden, self.num_hidden * 3),
                 name='time_state_to_state')
-            s_cc = tf.layers.conv2d(
+            s_cc = tf.layers.conv3d(
                 m, self.num_hidden * 4,
                 self.filter_size, 1, padding='same',
                 kernel_initializer=self.initializer(self.num_hidden, self.num_hidden * 4),
                 name='spatio_state_to_state')
             x_shape_in = x.get_shape().as_list()[-1]
-            x_cc = tf.layers.conv2d(
+            x_cc = tf.layers.conv3d(
                 x, self.num_hidden * 4,
                 self.filter_size, 1, padding='same',
                 kernel_initializer=self.initializer(x_shape_in, self.num_hidden * 4),
@@ -120,9 +121,9 @@ class MIMBlock():
                 s_cc = tensor_layer_norm(s_cc, 'spatio_state_to_state')
                 x_cc = tensor_layer_norm(x_cc, 'input_to_state')
 
-            i_s, g_s, f_s, o_s = tf.split(s_cc, 4, 3)
-            i_t, g_t, o_t = tf.split(t_cc, 3, 3)
-            i_x, g_x, f_x, o_x = tf.split(x_cc, 4, 3)
+            i_s, g_s, f_s, o_s = tf.split(s_cc, 4, 4)
+            i_t, g_t, o_t = tf.split(t_cc, 3, 4)
+            i_x, g_x, f_x, o_x = tf.split(x_cc, 4, 4)
 
             i = tf.nn.sigmoid(i_x + i_t)
             i_ = tf.nn.sigmoid(i_x + i_s)
@@ -133,8 +134,8 @@ class MIMBlock():
             new_m = f_ * m + i_ * g_
             c, self.convlstm_c = self.MIMS(diff_h, c, self.convlstm_c)
             new_c = c + i * g
-            cell = tf.concat([new_c, new_m], 3)
-            cell = tf.layers.conv2d(cell, self.num_hidden, 1, 1,
+            cell = tf.concat([new_c, new_m], 4)
+            cell = tf.layers.conv3d(cell, self.num_hidden, 1, 1,
                                     padding='same', name='cell_reduce')
             new_h = o * tf.nn.tanh(cell)
 
