@@ -1,4 +1,4 @@
-# Memory In Memory Networks
+# 3D Memory In Memory Networks
 
 3D-MIM is a neural network for predicting the evolution of SN simulations. It is based on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
 ](https://arxiv.org/abs/2302.00026).
@@ -11,17 +11,11 @@ We try to stationalize and approximate the non-stationary processes by modeling 
 
 ![model](https://github.com/ZJianjin/mim_images/blob/master/readme_structure.png)
 
-## Pre-trained Models and Datasets
 
-All pre-trained MIM models have been uploaded to [DROPBOX](https://www.dropbox.com/s/7kd82ijezk4lkmp/mim-lib.zip?dl=0) and [BAIDU YUN](https://pan.baidu.com/s/1O07H7l1NTWmAkx3UCDVMLA) (password: srhv).
-
-It also includes our pre-processed training/testing data for Moving MNIST, Color-Changing Moving MNIST, and TaxiBJ. 
-
-For Human3.6M, you may  download it using data/human36m.sh.
 
 ## Generation Results
 
-#### Moving MNIST
+#### SN simulations
 
 ![mnist1](https://github.com/ZJianjin/mim_images/blob/master/mnist1.gif)
 
@@ -29,36 +23,23 @@ For Human3.6M, you may  download it using data/human36m.sh.
 
 ![mnist2](https://github.com/ZJianjin/mim_images/blob/master/mnist5.gif)
 
-#### Color-Changing Moving MNIST
-
-![mnistc1](https://github.com/ZJianjin/mim_images/blob/master/mnistc2.gif)
-
-![mnistc2](https://github.com/ZJianjin/mim_images/blob/master/mnistc3.gif)
-
-![mnistc2](https://github.com/ZJianjin/mim_images/blob/master/mnistc4.gif)
-
-#### Radar Echos
-
-![radar1](https://github.com/ZJianjin/mim_images/blob/master/radar9.gif)
-
-![radar2](https://github.com/ZJianjin/mim_images/blob/master/radar3.gif)
-
-![radar3](https://github.com/ZJianjin/mim_images/blob/master/radar7.gif)
-
-#### Human3.6M
-
-![human1](https://github.com/ZJianjin/mim_images/blob/master/human3.gif)
-
-![human2](https://github.com/ZJianjin/mim_images/blob/master/human5.gif)
-
-![human3](https://github.com/ZJianjin/mim_images/blob/master/human10.gif)
 
 ## BibTeX
 ```
-@article{wang2018memory,
-  title={Memory In Memory: A Predictive Neural Network for Learning Higher-Order Non-Stationarity from Spatiotemporal Dynamics},
-  author={Wang, Yunbo and Zhang, Jianjin and Zhu, Hongyu and Long, Mingsheng and Wang, Jianmin and Yu, Philip S},
-  journal={arXiv preprint arXiv:1811.07490},
-  year={2019}
+@ARTICLE{2023arXiv230200026H,
+       author = {{Hirashima}, Keiya and {Moriwaki}, Kana and {Fujii}, Michiko S. and {Hirai}, Yutaka and {Saitoh}, Takayuki R. and {Makino}, Junichiro},
+        title = "{3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations}",
+      journal = {arXiv e-prints},
+     keywords = {Astrophysics - Astrophysics of Galaxies, Computer Science - Computational Engineering, Finance, and Science, Computer Science - Machine Learning},
+         year = 2023,
+        month = jan,
+          eid = {arXiv:2302.00026},
+        pages = {arXiv:2302.00026},
+          doi = {10.48550/arXiv.2302.00026},
+archivePrefix = {arXiv},
+       eprint = {2302.00026},
+ primaryClass = {astro-ph.GA},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2023arXiv230200026H},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
 ```
