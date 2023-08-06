@@ -1,6 +1,7 @@
 # Memory In Memory Networks
 
-MIM is a neural network for video prediction and spatiotemporal modeling. It is based on the paper [Memory In Memory: A Predictive Neural Network for Learning Higher-Order Non-Stationarity from Spatiotemporal Dynamics](https://arxiv.org/pdf/1811.07490.pdf) to be presented at CVPR 2019.
+3D-MIM is a neural network for predicting the evolution of SN simulations. It is based on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
+](https://arxiv.org/abs/2302.00026).
 
 ## Abstract
 
