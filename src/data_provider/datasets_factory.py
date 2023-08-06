@@ -1,9 +1,10 @@
-from src.data_provider import mnist,  human, taxibj
+from src.data_provider import mnist,  human, taxibj, sn
 
 datasets_map = {
     'mnist': mnist,
     'taxibj': taxibj,
-    'human': human
+    'human': human,
+    'sn': sn
 }
 
 
@@ -25,9 +26,11 @@ def data_provider(dataset_name, train_data_paths, valid_data_paths, batch_size,
     Raises:
         ValueError: If `dataset_name` is unknown.
     '''
+    #pathを受け取り、データをラッパーラッパー(mnist.pyなど)に流す。
     if dataset_name not in datasets_map:
         raise ValueError('Name of dataset unknown %s' % dataset_name)
     train_data_list = train_data_paths.split(',')
+    print('Num of Train Data: ', len(train_data_list))
     valid_data_list = valid_data_paths.split(',')
     if dataset_name == 'mnist':
         test_input_param = {'paths': valid_data_list,
@@ -35,7 +38,31 @@ def data_provider(dataset_name, train_data_paths, valid_data_paths, batch_size,
                             'input_data_type': 'float32',
                             'is_output_sequence': True,
                             'name': dataset_name + 'test iterator'}
+        #npzファイルの読み込み
         test_input_handle = datasets_map[dataset_name].InputHandle(test_input_param)
+        #batch size, input length, output lengthの確認
+        test_input_handle.begin(do_shuffle=False)
+        if is_training:
+            train_input_param = {'paths': train_data_list,
+                                 'minibatch_size': batch_size,
+                                 'input_data_type': 'float32',
+                                 'is_output_sequence': True,
+                                 'name': dataset_name + ' train iterator'}
+            train_input_handle = datasets_map[dataset_name].InputHandle(train_input_param)
+            train_input_handle.begin(do_shuffle=True)
+            return train_input_handle, test_input_handle
+        else:
+            return test_input_handle
+
+    if dataset_name == 'sn':
+        test_input_param = {'paths': valid_data_list,
+                            'minibatch_size': batch_size,
+                            'input_data_type': 'float32',
+                            'is_output_sequence': True,
+                            'name': dataset_name + 'test iterator'}
+        #read npz
+        test_input_handle = datasets_map[dataset_name].InputHandle(test_input_param)
+        #check batch size, input length, output length
         test_input_handle.begin(do_shuffle=False)
         if is_training:
             train_input_param = {'paths': train_data_list,
