@@ -13,7 +13,10 @@ We try to stationalize and approximate the non-stationary processes by modeling 
 
 
 ## How to run
+
+```
 singularity build mim-3d.file docker://kyafuk/tensorflow:mim-3d
+```
 
 ## Generation Results
 
