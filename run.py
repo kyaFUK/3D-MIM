@@ -1,8 +1,7 @@
-__author__ = 'yunbo'
-
 import os
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+
 import numpy as np
 from time import time
 
@@ -10,12 +9,15 @@ from src.data_provider import datasets_factory
 from src.models.model_factory import Model
 from src.utils import preprocess
 import src.trainer as trainer
+import warnings
+warnings.simplefilter('ignore')
+
 
 # -----------------------------------------------------------------------------
 FLAGS = tf.app.flags.FLAGS
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "2"
-
+#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 # mode
 tf.app.flags.DEFINE_boolean('is_training', True, 'training or testing')
 
@@ -23,25 +25,27 @@ tf.app.flags.DEFINE_boolean('is_training', True, 'training or testing')
 tf.app.flags.DEFINE_string('dataset_name', 'mnist',
                            'The name of dataset.')
 tf.app.flags.DEFINE_string('train_data_paths',
-                           'data/moving-mnist-example/moving-mnist-train.npz',
+                           '/content/drive/MyDrive/MIM-master/data/mnist-2c/moving-mnist-train.npz',
                            'train data paths.')
 tf.app.flags.DEFINE_string('valid_data_paths',
-                           'data/moving-mnist-example/moving-mnist-valid.npz',
+                           '/content/drive/MyDrive/MIM-master/data/mnist-2c/moving-mnist-test.npz',
                            'validation data paths.')
-tf.app.flags.DEFINE_string('save_dir', 'checkpoints/mnist_predrnn_pp',
+tf.app.flags.DEFINE_string('save_dir', '/content/drive/MyDrive/MIM-master/checkpoints/mnist_predrnn_pp',
                            'dir to store trained net.')
-tf.app.flags.DEFINE_string('gen_frm_dir', 'results/mnist_predrnn_pp',
+tf.app.flags.DEFINE_string('gen_frm_dir', '/content/drive/MyDrive/MIM-master/results/mnist_predrnn_pp',
                            'dir to store result.')
 tf.app.flags.DEFINE_integer('input_length', 10,
                             'encoder hidden states.')
 tf.app.flags.DEFINE_integer('total_length', 20,
                             'total input and output length.')
-tf.app.flags.DEFINE_integer('img_width', 64,
+tf.app.flags.DEFINE_integer('img_width', 32,
                             'input image width.')
+tf.app.flags.DEFINE_integer('img_depth', 32,
+                            'input image depth.')
 tf.app.flags.DEFINE_integer('img_channel', 1,
                             'number of image channel.')
 # model[convlstm, predcnn, predrnn, predrnn_pp]
-tf.app.flags.DEFINE_string('model_name', 'convlstm_net',
+tf.app.flags.DEFINE_string('model_name', 'mim',
                            'The name of the architecture.')
 tf.app.flags.DEFINE_string('pretrained_model', '',
                            'file of a pretrained model to initialize from.')
@@ -51,7 +55,7 @@ tf.app.flags.DEFINE_integer('filter_size', 5,
                             'filter of a convlstm layer.')
 tf.app.flags.DEFINE_integer('stride', 1,
                             'stride of a convlstm layer.')
-tf.app.flags.DEFINE_integer('patch_size', 1,
+tf.app.flags.DEFINE_integer('patch_size', 2,
                             'patch size on one dimension.')
 tf.app.flags.DEFINE_boolean('layer_norm', True,
                             'whether to apply tensor layer norm.')
@@ -79,7 +83,7 @@ tf.app.flags.DEFINE_integer('snapshot_interval', 1000,
                             'number of iters saving models.')
 tf.app.flags.DEFINE_integer('num_save_samples', 10,
                             'number of sequences to be saved.')
-tf.app.flags.DEFINE_integer('n_gpu', 1,
+tf.app.flags.DEFINE_integer('n_gpu', 0, #,1
                             'how many GPUs to distribute the training across.')
 # gpu 
 tf.app.flags.DEFINE_boolean('allow_gpu_growth', False,
@@ -97,6 +101,10 @@ def main(argv=None):
         tf.gfile.DeleteRecursively(FLAGS.gen_frm_dir)
     tf.gfile.MakeDirs(FLAGS.gen_frm_dir)
 
+    physical_devices = tf.config.experimental.list_physical_devices('GPU')
+    assert len(physical_devices) > 0, "Not enough GPU hardware devices available"
+    config = tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
     gpu_list = np.asarray(os.environ.get('CUDA_VISIBLE_DEVICES', '-1').split(',') ,dtype=np.int32)
     FLAGS.n_gpu = len(gpu_list)
     print('Initializing models')
@@ -104,8 +112,10 @@ def main(argv=None):
     model = Model(FLAGS)
 
     if FLAGS.is_training:
+        print('start training')
         train_wrapper(model)
     else:
+        print('start testing')
         start = time()
         test_wrapper(model)
         stop = time()
@@ -121,7 +131,8 @@ def schedule_sampling(eta, itr):
                       FLAGS.total_length - FLAGS.input_length - 1,
                       FLAGS.img_width // FLAGS.patch_size,
                       height // FLAGS.patch_size,
-                      FLAGS.patch_size ** 2 * FLAGS.img_channel))
+                      FLAGS.img_depth // FLAGS.patch_size,
+                      FLAGS.patch_size ** 3 * FLAGS.img_channel))
     if not FLAGS.scheduled_sampling:
         return 0.0, zeros
 
@@ -134,10 +145,12 @@ def schedule_sampling(eta, itr):
     true_token = (random_flip < eta)
     ones = np.ones((FLAGS.img_width // FLAGS.patch_size,
                     height // FLAGS.patch_size,
-                    FLAGS.patch_size ** 2 * FLAGS.img_channel))
+                    FLAGS.img_depth // FLAGS.patch_size,
+                    FLAGS.patch_size ** 3 * FLAGS.img_channel))
     zeros = np.zeros((FLAGS.img_width // FLAGS.patch_size,
                       height // FLAGS.patch_size,
-                      FLAGS.patch_size ** 2 * FLAGS.img_channel))
+                      FLAGS.img_depth // FLAGS.patch_size,
+                      FLAGS.patch_size ** 3 * FLAGS.img_channel))
     real_input_flag = []
     for i in range(FLAGS.batch_size):
         for j in range(FLAGS.total_length - FLAGS.input_length - 1):
@@ -151,13 +164,15 @@ def schedule_sampling(eta, itr):
                             FLAGS.total_length - FLAGS.input_length - 1,
                             FLAGS.img_width // FLAGS.patch_size,
                             height // FLAGS.patch_size,
-                            FLAGS.patch_size ** 2 * FLAGS.img_channel))
+                            FLAGS.img_depth // FLAGS.patch_size,
+                            FLAGS.patch_size ** 3 * FLAGS.img_channel))
     return eta, real_input_flag
 
 
 def train_wrapper(model):
     if FLAGS.pretrained_model:
         model.load(FLAGS.pretrained_model)
+        
     # load data
     train_input_handle, test_input_handle = datasets_factory.data_provider(
         FLAGS.dataset_name, FLAGS.train_data_paths, FLAGS.valid_data_paths,
@@ -171,7 +186,7 @@ def train_wrapper(model):
         ims = train_input_handle.get_batch()
         ims_reverse = None
         if FLAGS.reverse_img:
-            ims_reverse = ims[:, :, :, ::-1]
+            ims_reverse = ims[:, :, :, :, ::-1]
             ims_reverse = preprocess.reshape_patch(ims_reverse, FLAGS.patch_size)
         ims = preprocess.reshape_patch(ims, FLAGS.patch_size)
 
@@ -193,8 +208,7 @@ def test_wrapper(model):
     test_input_handle = datasets_factory.data_provider(
         FLAGS.dataset_name, FLAGS.train_data_paths, FLAGS.valid_data_paths,
         FLAGS.batch_size * FLAGS.n_gpu, FLAGS.img_width, seq_length=FLAGS.total_length, is_training=False)
-    trainer.test(model, test_input_handle, FLAGS, 'test_result')
-
+    trainer.test(model, test_input_handle, FLAGS, 'test')
 
 if __name__ == '__main__':
     tf.app.run()
