@@ -3,6 +3,14 @@
 3D-MIM is a neural network for predicting the evolution of SN simulations. It is based on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
 ](https://arxiv.org/abs/2302.00026).
 
+```
+docker pull kyafuk/tensorflow:mim-3d
+```
+
+```
+singularity build mim-3d.file docker://kyafuk/tensorflow:mim-3d
+```
+
 ## Abstract
 
 Natural spatiotemporal processes can be highly non-stationary in many ways, e.g. the low-level non-stationarity such as spatial correlations or temporal dependencies of local pixel values; and the high-level non-stationarity such as the accumulation, deformation or dissipation of radar echoes in precipitation forecasting.
