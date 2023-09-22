@@ -1,15 +1,8 @@
 # 3D Memory In Memory Networks
 
 3D-MIM is a deep-learning model for predicting the evolution of SN simulations. It is based on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
-](https://arxiv.org/abs/2302.00026). The original Memory In Memory network was proposed by [Yunbo Wang et al. 2018](https://arxiv.org/abs/1811.07490)
+](https://arxiv.org/abs/2302.00026). The original Memory In Memory network was proposed by [Yunbo Wang et al. 2018](https://arxiv.org/abs/1811.07490).
 
-```
-docker pull kyafuk/tensorflow:mim-3d
-```
-
-```
-singularity build mim-3d.file docker://kyafuk/tensorflow:mim-3d
-```
 
 ## Abstract
 
@@ -19,11 +12,23 @@ reside during the subsequent global step in advance. In this paper, we develop a
 ![model](https://github.com/ZJianjin/mim_images/blob/master/readme_structure.png)
 
 
-## How to run
+# How to run
+
+## Build containers (if necessary)
+
+```
+docker pull kyafuk/tensorflow:mim-3d
+```
 
 ```
 singularity build mim-3d.file docker://kyafuk/tensorflow:mim-3d
 ```
+
+## Parameters you may need to change
+```
+docker pull kyafuk/tensorflow:mim-3d
+```
+
 
 ## Generation Results
 
