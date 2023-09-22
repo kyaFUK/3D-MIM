@@ -1,7 +1,7 @@
 # 3D Memory In Memory Networks
 
-3D-MIM is a neural network for predicting the evolution of SN simulations. It is based on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
-](https://arxiv.org/abs/2302.00026).
+3D-MIM is a deep-learning model for predicting the evolution of SN simulations. It is based on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
+](https://arxiv.org/abs/2302.00026). The original Memory In Memory network was proposed by [Yunbo Wang et al. 2018](https://arxiv.org/abs/1811.07490)
 
 ```
 docker pull kyafuk/tensorflow:mim-3d
