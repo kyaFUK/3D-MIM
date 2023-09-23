@@ -14,9 +14,14 @@ reside during the subsequent global step in advance. In this paper, we develop a
 
 ## Build containers (if necessary)
 
+Two options are prepared to make containers.
+If you want to use Docker (e.g., on clusters or supercomputers),
+
 ```
 docker pull kyafuk/tensorflow:mim-3d
 ```
+
+If you want to use singularity (e.g., on clusters or supercomputers),
 
 ```
 singularity build mim-3d.file docker://kyafuk/tensorflow:mim-3d
