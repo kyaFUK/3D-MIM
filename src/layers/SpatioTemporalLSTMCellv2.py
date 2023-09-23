@@ -1,7 +1,9 @@
 import math
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 from src.layers.TensorLayerNorm import tensor_layer_norm
+
+#changed 2d to 3d, and added depth
 
 class SpatioTemporalLSTMCell():
     def __init__(self, layer_name, filter_size, num_hidden_in, num_hidden,
@@ -21,6 +23,7 @@ class SpatioTemporalLSTMCell():
         self.batch = seq_shape[0]
         self.height = seq_shape[2]
         self.width = seq_shape[3]
+        self.depth = seq_shape[4]
         self.layer_norm = tln
         self._forget_bias = 1.0
 
@@ -33,7 +36,7 @@ class SpatioTemporalLSTMCell():
             self.initializer = tf.random_uniform_initializer(-initializer, initializer)
 
     def init_state(self):
-        return tf.zeros([self.batch, self.height, self.width, self.num_hidden],
+        return tf.zeros([self.batch, self.height, self.width, self.depth ,self.num_hidden],
                         dtype=tf.float32)
 
     def __call__(self, x, h, c, m):
@@ -45,19 +48,22 @@ class SpatioTemporalLSTMCell():
             m = self.init_state()
 
         with tf.variable_scope(self.layer_name):
-            t_cc = tf.layers.conv2d(
+            #inputs, filters, kernel_size, strides
+            t_cc = tf.layers.conv3d(
                 h, self.num_hidden*4,
                 self.filter_size, 1, padding='same',
                 kernel_initializer=self.initializer(self.num_hidden_in, self.num_hidden*4),
                 name='time_state_to_state')
-            s_cc = tf.layers.conv2d(
+
+            s_cc = tf.layers.conv3d(
                 m, self.num_hidden*4,
                 self.filter_size, 1, padding='same',
                 kernel_initializer=self.initializer(self.num_hidden_in, self.num_hidden*4),
                 name='spatio_state_to_state')
             x_shape_in = x.get_shape().as_list()[-1]
-            x_cc = tf.layers.conv2d(
-                x, self.num_hidden*4,
+
+            x_cc = tf.layers.conv3d(
+                x, self.num_hidden*4, #input, the dimensionality of the output space (Intege, i.e. the number of filters in the convolution).
                 self.filter_size, 1, padding='same',
                 kernel_initializer=self.initializer(x_shape_in, self.num_hidden*4),
                 name='input_to_state')
@@ -65,10 +71,10 @@ class SpatioTemporalLSTMCell():
                 t_cc = tensor_layer_norm(t_cc, 'time_state_to_state')
                 s_cc = tensor_layer_norm(s_cc, 'spatio_state_to_state')
                 x_cc = tensor_layer_norm(x_cc, 'input_to_state')
-
-            i_s, g_s, f_s, o_s = tf.split(s_cc, 4, 3)
-            i_t, g_t, f_t, o_t = tf.split(t_cc, 4, 3)
-            i_x, g_x, f_x, o_x = tf.split(x_cc, 4, 3)
+          
+            i_s, g_s, f_s, o_s = tf.split(s_cc, 4, 4)
+            i_t, g_t, f_t, o_t = tf.split(t_cc, 4, 4)
+            i_x, g_x, f_x, o_x = tf.split(x_cc, 4, 4) #ここらへん?
 
             i = tf.nn.sigmoid(i_x + i_t)
             i_ = tf.nn.sigmoid(i_x + i_s)
@@ -77,10 +83,12 @@ class SpatioTemporalLSTMCell():
             f = tf.nn.sigmoid(f_x + f_t + self._forget_bias)
             f_ = tf.nn.sigmoid(f_x + f_s + self._forget_bias)
             o = tf.nn.sigmoid(o_x + o_t + o_s)
+
             new_m = f_ * m + i_ * g_
             new_c = f * c + i * g
-            cell = tf.concat([new_c, new_m],3)
-            cell = tf.layers.conv2d(cell, self.num_hidden, 1, 1, padding='same',
+            
+            cell = tf.concat([new_c, new_m],4)
+            cell = tf.layers.conv3d(cell, self.num_hidden, 1, 1, padding='same',
                                     kernel_initializer=self.initializer(self.num_hidden*2, self.num_hidden),
                                     name='cell_reduce')
             new_h = o * tf.nn.tanh(cell)

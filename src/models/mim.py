@@ -1,11 +1,10 @@
-__author__ = 'jianjin'
-
-import tensorflow as tf
+import tensorflow.compat.v1 as tf 
 from src.layers.SpatioTemporalLSTMCellv2 import SpatioTemporalLSTMCell as stlstm
 from src.layers.MIMBlock import MIMBlock as mimblock
 from src.layers.MIMN import MIMN as mimn
 import math
 
+#changed conv2d to conv3d
 
 def w_initializer(dim_in, dim_out):
     random_range = math.sqrt(6.0 / (dim_in + dim_out))
@@ -83,7 +82,7 @@ def mim(images, params, schedual_sampling_bool, num_layers, num_hidden, filter_s
                 preh = hidden_state[i]
                 hidden_state[i], cell_state[i], st_memory = stlstm_layer[i](
                     hidden_state[i - 1], hidden_state_diff[i - 1], hidden_state[i], cell_state[i], st_memory)
-            x_gen = tf.layers.conv2d(hidden_state[num_layers - 1],
+            x_gen = tf.layers.conv3d(hidden_state[num_layers - 1],
                                      filters=output_channels,
                                      kernel_size=1,
                                      strides=1,

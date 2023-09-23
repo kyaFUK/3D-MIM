@@ -1,7 +1,7 @@
 import os
 
-import tensorflow as tf
-
+import tensorflow.compat.v1 as tf
+tf.compat.v1.disable_eager_execution()
 from src.utils import optimizer
 from src.models import mim
 
@@ -15,26 +15,29 @@ class Model(object):
         else:
             height = configs.img_width
         self.x = [tf.placeholder(tf.float32,
-                                 [self.configs.batch_size,
+                                 [self.configs.batch_size, 
                                   self.configs.total_length,
                                   self.configs.img_width // self.configs.patch_size,
                                   height // self.configs.patch_size,
-                                  self.configs.patch_size * self.configs.patch_size * self.configs.img_channel])
+                                  self.configs.img_depth // self.configs.patch_size,
+                                  self.configs.patch_size * self.configs.patch_size * self.configs.patch_size * self.configs.img_channel])
                   for i in range(self.configs.n_gpu)]
 
         self.real_input_flag = tf.placeholder(tf.float32,
                                         [self.configs.batch_size,
                                          self.configs.total_length - self.configs.input_length - 1,
                                          self.configs.img_width // self.configs.patch_size,
-                                         height // self.configs.patch_size,
-                                         self.configs.patch_size * self.configs.patch_size * self.configs.img_channel])
+                                         height // self.configs.patch_size, 
+                                         self.configs.img_depth // self.configs.patch_size,
+                                         self.configs.patch_size * self.configs.patch_size * self.configs.patch_size * self.configs.img_channel])
 
         grads = []
         loss_train = []
         self.pred_seq = []
         self.tf_lr = tf.placeholder(tf.float32, shape=[])
         self.params = dict()
-        self.params.update(self.configs.__dict__['__flags'])
+        for k in self.configs:
+            self.params[k] = self.configs[k].value
         num_hidden = [int(x) for x in self.configs.num_hidden.split(',')]
         num_layers = len(num_hidden)
         for i in range(self.configs.n_gpu):
@@ -96,6 +99,7 @@ class Model(object):
             self.saver.restore(self.sess, self.configs.pretrained_model)
 
     def train(self, inputs, lr, real_input_flag):
+        #print(self.x[0])
         feed_dict = {self.x[i]: inputs[i] for i in range(self.configs.n_gpu)}
         feed_dict.update({self.tf_lr: lr})
         feed_dict.update({self.real_input_flag: real_input_flag})
