@@ -50,7 +50,7 @@ python -u run.py \
 ```
 
 
-## Generation Results
+## Prediction sample
 A forecast result by the 3D-MIM.
 _Left_: the simulation result (ground truth). _Right_: the 3D-MIM's forecast result.
 
