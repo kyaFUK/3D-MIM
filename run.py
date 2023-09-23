@@ -17,7 +17,6 @@ warnings.simplefilter('ignore')
 FLAGS = tf.app.flags.FLAGS
 
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 # mode
 tf.app.flags.DEFINE_boolean('is_training', True, 'training or testing')
 
@@ -25,10 +24,10 @@ tf.app.flags.DEFINE_boolean('is_training', True, 'training or testing')
 tf.app.flags.DEFINE_string('dataset_name', 'mnist',
                            'The name of dataset.')
 tf.app.flags.DEFINE_string('train_data_paths',
-                           '/content/drive/MyDrive/MIM-master/data/mnist-2c/moving-mnist-train.npz',
+                           './data/SampleData.npz',
                            'train data paths.')
 tf.app.flags.DEFINE_string('valid_data_paths',
-                           '/content/drive/MyDrive/MIM-master/data/mnist-2c/moving-mnist-test.npz',
+                           './data/SampleData.npz',
                            'validation data paths.')
 tf.app.flags.DEFINE_string('save_dir', '/content/drive/MyDrive/MIM-master/checkpoints/mnist_predrnn_pp',
                            'dir to store trained net.')
@@ -83,7 +82,7 @@ tf.app.flags.DEFINE_integer('snapshot_interval', 1000,
                             'number of iters saving models.')
 tf.app.flags.DEFINE_integer('num_save_samples', 10,
                             'number of sequences to be saved.')
-tf.app.flags.DEFINE_integer('n_gpu', 0, #,1
+tf.app.flags.DEFINE_integer('n_gpu', 0,
                             'how many GPUs to distribute the training across.')
 # gpu 
 tf.app.flags.DEFINE_boolean('allow_gpu_growth', False,

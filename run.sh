@@ -14,10 +14,10 @@ python -u run.py \
     --total_length 20 \
     --max_iterations 1\
     --display_interval 1 \
-    --test_interval 14400 \
+    --test_interval 12 \
     --snapshot_interval 1 \
     --num_hidden 32,32,32,32 \
     --batch_size 1 \
     --patch_size 1 \
-    --num_save_samples 960 \
+    --num_save_samples 12 \
     |& tee sample.log
