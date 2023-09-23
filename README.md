@@ -3,11 +3,13 @@
 3D-MIM learns time-series of 3D voxels with the sape (timestep, color, width, height, depth). The model is developed to predict the evolution of Supernova (SN) shells on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
 ](https://arxiv.org/abs/2302.00026), which is accepted for [MNRAS](https://academic.oup.com/mnras). The original Memory In Memory network was proposed by [Yunbo Wang et al. 2018](https://arxiv.org/abs/1811.07490).
 
+## Forecast sample
+A forecast result by the 3D-MIM.
+The following shows the cross section view of 3D voxels.
+_Left_: the simulation result (ground truth). _Right_: the 3D-MIM's forecast result.
 
-## Abstract
+![SN](https://github.com/kyaFUK/3D-MIM/blob/master/test_sample/SN_video.gif)
 
-Supernova (SN) plays an important role in galaxy formation and evolution. In high-resolution galaxy simulations using massively parallel computing, short integration timesteps for SNe are serious bottlenecks. This is an urgent issue that needs to be resolved for future higher-resolution galaxy simulations. One possible solution would be to use the Hamiltonian splitting method, in which regions requiring short timesteps are integrated separately from the entire system. To apply this method to the particles affected by SNe in a smoothed-particle hydrodynamics simulation, we need to detect the shape of the shell on and within which such SN-affected particles 
-reside during the subsequent global step in advance. In this paper, we develop a deep learning model, 3D-MIM, to predict a shell expansion after a SN explosion. Trained on turbulent cloud simulations with particle mass $m_{\rm gas}=1 \mathrm{M}_\odot$, the model accurately reproduces the anisotropic shell shape, where densities decrease by over 10 per cent by the explosion. We also demonstrate that the model properly predicts the shell radius in the uniform medium beyond the training dataset of inhomogeneous turbulent clouds. We conclude that our model enables the forecast of the shell and its interior where SN-affected particles will be present.
 
 
 # How to run
@@ -56,14 +58,6 @@ python -u run.py \
     --num_save_samples 12 \
     |& tee sample.log
 ```
-
-
-## Forecast sample
-A forecast result by the 3D-MIM.
-The following shows the cross section view of 3D voxels.
-_Left_: the simulation result (ground truth). _Right_: the 3D-MIM's forecast result.
-
-![SN](https://github.com/kyaFUK/3D-MIM/blob/master/test_sample/SN_video.gif)
 
 
 ## BibTeX
