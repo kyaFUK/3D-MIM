@@ -51,8 +51,8 @@ python -u run.py \
 
 
 ## Generation Results
-
-#### SN simulations
+A forecast result by the 3D-MIM.
+_Left_: the simulation result (ground truth). _Right_: the 3D-MIM's forecast result.
 
 ![SN](https://github.com/kyaFUK/3D-MIM/blob/master/test_sample/SN_video.gif)
 
