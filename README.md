@@ -9,8 +9,6 @@
 Supernova (SN) plays an important role in galaxy formation and evolution. In high-resolution galaxy simulations using massively parallel computing, short integration timesteps for SNe are serious bottlenecks. This is an urgent issue that needs to be resolved for future higher-resolution galaxy simulations. One possible solution would be to use the Hamiltonian splitting method, in which regions requiring short timesteps are integrated separately from the entire system. To apply this method to the particles affected by SNe in a smoothed-particle hydrodynamics simulation, we need to detect the shape of the shell on and within which such SN-affected particles 
 reside during the subsequent global step in advance. In this paper, we develop a deep learning model, 3D-MIM, to predict a shell expansion after a SN explosion. Trained on turbulent cloud simulations with particle mass $m_{\rm gas}=1 \mathrm{M}_\odot$, the model accurately reproduces the anisotropic shell shape, where densities decrease by over 10 per cent by the explosion. We also demonstrate that the model properly predicts the shell radius in the uniform medium beyond the training dataset of inhomogeneous turbulent clouds. We conclude that our model enables the forecast of the shell and its interior where SN-affected particles will be present.
 
-![model](https://github.com/ZJianjin/mim_images/blob/master/readme_structure.png)
-
 
 # How to run
 
@@ -56,9 +54,7 @@ python -u run.py \
 
 #### SN simulations
 
-![SN](https://github.com/kyaFUK/3D-MIM/tree/master/test_sample/SN_video.gif)
-
-
+![SN](https://github.com/kyaFUK/3D-MIM/blob/master/test_sample/SN_video.gif)
 
 
 ## BibTeX
