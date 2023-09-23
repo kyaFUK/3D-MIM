@@ -58,8 +58,9 @@ python -u run.py \
 ```
 
 
-## Prediction sample
+## Forecast sample
 A forecast result by the 3D-MIM.
+The following shows the cross section view of 3D voxels.
 _Left_: the simulation result (ground truth). _Right_: the 3D-MIM's forecast result.
 
 ![SN](https://github.com/kyaFUK/3D-MIM/blob/master/test_sample/SN_video.gif)
