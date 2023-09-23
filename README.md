@@ -1,7 +1,7 @@
 # 3D Memory In Memory Networks (3D-MIM)
 
 3D-MIM learns time-series of 3D voxels with the sape (timestep, color, width, height, depth). The model is developed to predict the evolution of Supernova (SN) shells on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
-](https://arxiv.org/abs/2302.00026). The original Memory In Memory network was proposed by [Yunbo Wang et al. 2018](https://arxiv.org/abs/1811.07490).
+](https://arxiv.org/abs/2302.00026), which is accepted for [MNRAS](https://academic.oup.com/mnras). The original Memory In Memory network was proposed by [Yunbo Wang et al. 2018](https://arxiv.org/abs/1811.07490).
 
 
 ## Abstract
