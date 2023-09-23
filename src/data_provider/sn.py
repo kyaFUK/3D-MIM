@@ -75,7 +75,7 @@ class InputHandle:
                                          in self.current_batch_indices)
 
     def no_batch_left(self):
-        if self.current_position >= self.total(): #- self.current_batch_size:
+        if self.current_position >= self.total():
             return True
         else:
             return False
