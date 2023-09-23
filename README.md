@@ -17,7 +17,7 @@ _Left_: the simulation result (ground truth). _Right_: the 3D-MIM's forecast res
 ## Build containers (if necessary)
 
 Two options are prepared to make containers.
-If you want to use Docker (e.g., on clusters or supercomputers),
+If you want to use Docker,
 
 ```
 docker pull kyafuk/tensorflow:mim-3d
