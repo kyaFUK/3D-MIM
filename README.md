@@ -5,7 +5,7 @@
 
 ## Forecast sample
 A forecast result by the 3D-MIM.
-A supernova explosion happens at the center and sweaps out the ambient gas.
+A supernova explosion happens at the center and sweeps out the ambient gas.
 The following shows the cross section view of 3D voxels in density.
 _Left_: the simulation result (ground truth). _Right_: the 3D-MIM's forecast result.
 
