@@ -1,22 +1,34 @@
 # 3D Memory In Memory Networks
 
-3D-MIM is a neural network for predicting the evolution of SN simulations. It is based on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
-](https://arxiv.org/abs/2302.00026).
+3D-MIM is a deep-learning model for predicting the evolution of SN simulations. It is based on the paper [3D-Spatiotemporal Forecasting the Expansion of Supernova Shells Using Deep Learning toward High-Resolution Galaxy Simulations
+](https://arxiv.org/abs/2302.00026). The original Memory In Memory network was proposed by [Yunbo Wang et al. 2018](https://arxiv.org/abs/1811.07490).
+
 
 ## Abstract
 
-Natural spatiotemporal processes can be highly non-stationary in many ways, e.g. the low-level non-stationarity such as spatial correlations or temporal dependencies of local pixel values; and the high-level non-stationarity such as the accumulation, deformation or dissipation of radar echoes in precipitation forecasting.
-
-We try to stationalize and approximate the non-stationary processes by modeling the differential signals with the MIM recurrent blocks. By stacking multiple MIM blocks, we could potentially handle higher-order non-stationarity. Our model achieves the state-of-the-art results on three spatiotemporal prediction tasks across both synthetic and real-world data.
+Supernova (SN) plays an important role in galaxy formation and evolution. In high-resolution galaxy simulations using massively parallel computing, short integration timesteps for SNe are serious bottlenecks. This is an urgent issue that needs to be resolved for future higher-resolution galaxy simulations. One possible solution would be to use the Hamiltonian splitting method, in which regions requiring short timesteps are integrated separately from the entire system. To apply this method to the particles affected by SNe in a smoothed-particle hydrodynamics simulation, we need to detect the shape of the shell on and within which such SN-affected particles 
+reside during the subsequent global step in advance. In this paper, we develop a deep learning model, 3D-MIM, to predict a shell expansion after a SN explosion. Trained on turbulent cloud simulations with particle mass $m_{\rm gas}=1 \mathrm{M}_\odot$, the model accurately reproduces the anisotropic shell shape, where densities decrease by over 10 per cent by the explosion. We also demonstrate that the model properly predicts the shell radius in the uniform medium beyond the training dataset of inhomogeneous turbulent clouds. We conclude that our model enables the forecast of the shell and its interior where SN-affected particles will be present.
 
 ![model](https://github.com/ZJianjin/mim_images/blob/master/readme_structure.png)
 
 
-## How to run
+# How to run
+
+## Build containers (if necessary)
+
+```
+docker pull kyafuk/tensorflow:mim-3d
+```
 
 ```
 singularity build mim-3d.file docker://kyafuk/tensorflow:mim-3d
 ```
+
+## Parameters you may need to change
+```
+docker pull kyafuk/tensorflow:mim-3d
+```
+
 
 ## Generation Results
 

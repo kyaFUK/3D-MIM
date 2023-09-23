@@ -26,12 +26,7 @@ def data_provider(dataset_name, train_data_paths, valid_data_paths, batch_size,
     Raises:
         ValueError: If `dataset_name` is unknown.
     '''
-    # Take dataset_nameとtrain_data_paths, valid_data_paths, batch_size, img_width, seq_length, is_training,
-    # Return the dataset corresponding to dataset_name
-    # If is_training==True:  return train_input_handle, test_input_handle
-    # If is_training==False: return test_input_handle
-
-
+    #pathを受け取り、データをラッパーラッパー(mnist.pyなど)に流す。
     if dataset_name not in datasets_map:
         raise ValueError('Name of dataset unknown %s' % dataset_name)
     train_data_list = train_data_paths.split(',')
