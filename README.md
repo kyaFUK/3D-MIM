@@ -56,7 +56,7 @@ python -u run.py \
 
 #### SN simulations
 
-![mnist1](https://github.com/ZJianjin/mim_images/blob/master/mnist1.gif)
+![SN](https://github.com/kyaFUK/3D-MIM/tree/master/test_sample/SN_video.gif)
 
 
 
